@@ -5,4 +5,5 @@ mount --make-rslave /srv/sysimage/sys
 mount --rbind /dev /srv/sysimage/dev
 mount --make-rslave /srv/sysimage/dev
 mount --rbind /usr/portage /srv/sysimage/usr/portage
+mount --rbind /usr/local/portage /srv/sysimage/usr/local/portage
 mount --rbind /var/lib/layman/science /srv/sysimage/var/lib/layman/science

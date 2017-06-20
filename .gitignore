@@ -1,0 +1,5 @@
+/export/
+/sysimage/
+/tftpboot/grub/
+/tftpboot/kernel
+/tftpboot/initrd

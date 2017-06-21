@@ -8,6 +8,7 @@ fi
 
 NAME="$1"
 HIGHEST_UID="$(ldapsearch -LLL "(uidNumber=*)" uidNumber -S uidNumber | grep uidNumber | tail -n1 | cut -d' ' -f2)"
+[ -z "$HIGHEST_UID" ] && HIGHEST_UID=9999
 NEW_UID="$(( $HIGHEST_UID + 1 ))"
 PASS="$(slappasswd -n -s "$NAME$NAME$NAME")"
 
@@ -40,11 +41,11 @@ chown -R $NAME:users /home/$NAME
 chmod 700 /home/$NAME
 su $NAME -c "ssh-keygen -t ed25519 -N '' -f ~/.ssh/id_ed25519 && cp ~/.ssh/id_ed25519.pub  ~/.ssh/authorized_keys"
 
-mkdir /srv/sysimage/work/$NAME
+mkdir -p /srv/sysimage/work/$NAME
 chown -R $NAME:users /srv/sysimage/work/$NAME
 chmod 700 /srv/sysimage/work/$NAME
 
-clush -a mkdir /work/$NAME
+clush -a mkdir -p /work/$NAME
 clush -a chown -R $NAME:users /work/$NAME
 clush -a chmod 700 /work/$NAME
 

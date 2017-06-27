@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 if [ $# != 1 ]; then
@@ -10,9 +10,10 @@ NAME="$1"
 HIGHEST_UID="$(ldapsearch -LLL "(uidNumber=*)" uidNumber -S uidNumber | grep uidNumber | tail -n1 | cut -d' ' -f2)"
 [ -z "$HIGHEST_UID" ] && HIGHEST_UID=9999
 NEW_UID="$(( $HIGHEST_UID + 1 ))"
-PASS="$(slappasswd -n -s "$NAME$NAME$NAME")"
+NEWHOME="/home/users/$NAME"
+PWBASE64="$(echo -n "$NAME$NAME$NAME" | base64 -w0)"
 
-if [ -e /home/$NAME ]; then
+if [ -e "$NEWHOME" ]; then
 	echo "Username already has a homedir, aborting."
 	exit 1
 fi
@@ -27,26 +28,29 @@ cn: $NAME
 uid: $NAME
 uidNumber: $NEW_UID
 gidNumber: 100
-homeDirectory: /home/$NAME
+homeDirectory: $NEWHOME
 loginShell: /bin/bash
-gecos: $NAME
-userPassword: $PASS
+gecos: Account added via adduser.sh by $(whoami) on $(date)
+userPassword:: $PWBASE64
 shadowLastChange: 0
 shadowMax: 0
 shadowWarning: 0
 EOF
 
-cp -a /etc/skel /home/$NAME
-chown -R $NAME:users /home/$NAME
-chmod 700 /home/$NAME
+cp -a /etc/skel "$NEWHOME"
+chown -R $NAME:users "$NEWHOME"
+chmod 700 "$NEWHOME"
 su $NAME -c "ssh-keygen -t ed25519 -N '' -f ~/.ssh/id_ed25519 && cp ~/.ssh/id_ed25519.pub  ~/.ssh/authorized_keys"
 
-mkdir -p /srv/sysimage/work/$NAME
-chown -R $NAME:users /srv/sysimage/work/$NAME
-chmod 700 /srv/sysimage/work/$NAME
+# Apply default quota of 1TB for new users
+zfs set "userquota@${NAME}=1T" datapool/home
 
-clush -a mkdir -p /work/$NAME
-clush -a chown -R $NAME:users /work/$NAME
-clush -a chmod 700 /work/$NAME
+# Workdir dynamically created by slurm prolog/epilog
+#mkdir -p /srv/sysimage/work/$NAME
+#chown -R $NAME:users /srv/sysimage/work/$NAME
+#chmod 700 /srv/sysimage/work/$NAME
+#clush -a mkdir -p /work/$NAME
+#clush -a chown -R $NAME:users /work/$NAME
+#clush -a chmod 700 /work/$NAME
 
 echo DONE

@@ -32,9 +32,8 @@ homeDirectory: $NEWHOME
 loginShell: /bin/bash
 gecos: Account added via adduser.sh by $(whoami) on $(date)
 userPassword:: $PWBASE64
+pwdReset: TRUE
 shadowLastChange: 0
-shadowMax: 0
-shadowWarning: 0
 EOF
 
 cp -a /etc/skel "$NEWHOME"

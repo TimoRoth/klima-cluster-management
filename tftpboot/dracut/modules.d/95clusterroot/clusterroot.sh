@@ -87,9 +87,10 @@ warn "rsync done"
 warn "Updating hostname"
 hn="$(cat /proc/sys/kernel/hostname)"
 hns="${hn%%.*}"
+echo "$hns" > /proc/sys/kernel/hostname || die "Setting static hostname failed"
 grep -v "$hns" "$NEWROOT/etc/hosts" | sed "s/nodeself/${hns}/g" > "$NEWROOT/etc/hosts_new" || die "/etc/hosts update failed"
 mv "$NEWROOT/etc/hosts_new" "$NEWROOT/etc/hosts" || die "hosts move failed"
-echo "$hn" > "$NEWROOT/etc/hostname" || die "Setting /etc/hostname failed"
+echo "$hns" > "$NEWROOT/etc/hostname" || die "Setting /etc/hostname failed"
 
 [ -e /dev/root ] || ln -s null /dev/root
 

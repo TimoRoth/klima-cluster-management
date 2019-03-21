@@ -1,4 +1,6 @@
 #!/bin/bash
+zfs snapshot "datapool/sysimage@$(date +%F)" || true
+
 mount -t proc /proc /srv/sysimage/proc
 mount --rbind /sys /srv/sysimage/sys
 mount --make-rslave /srv/sysimage/sys

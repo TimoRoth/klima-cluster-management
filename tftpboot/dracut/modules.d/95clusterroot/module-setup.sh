@@ -20,6 +20,10 @@ install() {
 	inst rsync
 	inst grep
 	inst mdadm
+	inst dd
+	inst mkswap
+	inst swapon
+	inst chmod
 
 	inst_hook pre-trigger 30 "$moddir/disable-md.sh"
 	inst_hook cmdline 90 "$moddir/parse-clusterroot.sh"

@@ -8,6 +8,6 @@ fi
 
 NAME="$1"
 
-ldapdelete -x -W -D "cn=admin,dc=klima-cluster,dc=uni-bremen,dc=de" "cn=$NAME,ou=People,dc=klima-cluster,dc=uni-bremen,dc=de"
+ldapdelete -x -W -D "cn=admin,dc=klima-cluster,dc=uni-bremen,dc=de" "cn=$NAME,ou=People,dc=klima-cluster,dc=uni-bremen,dc=de" "cn=$NAME,ou=Group,dc=klima-cluster,dc=uni-bremen,dc=de"
 
 echo DONE

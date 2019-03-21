@@ -33,15 +33,17 @@ echo "Cluster: Will Force-Create? -> $force_create" 1>&2
 # NVMe init can take a while, wait for our devices
 udevsettle
 
-# Check if nvme0n1 and nvme1n1 exist and have exactly one partition
-if [ $force_create = 0 ] && [ "/dev/nvme0n1p1" = "$(echo /dev/nvme0n1p*)" ] && [ "/dev/nvme1n1p1" = "$(echo /dev/nvme1n1p*)" ]; then
+# Check if nvme0n1 and nvme1n1 exist and have exactly two partitions
+if [ $force_create = 0 ] && [ "/dev/nvme0n1p1 /dev/nvme0n1p2" = "$(echo /dev/nvme0n1p*)" ] && [ "/dev/nvme1n1p1 /dev/nvme1n1p2" = "$(echo /dev/nvme1n1p*)" ]; then
 	info "nvme0n1 and nvme1n1 found as expected, continuing"
 else
 	warn "Empty or unknown disk layout detected, repartitioning"
 	for p in /dev/nvme{0,1}n1; do
 		sgdisk -o "$p" 1>&2 || die "sgdisk create failed"
-		sgdisk --largest-new=1 "$p" 1>&2 || die "sgdisk largest failed"
-		sgdisk --typecode=1:fd00 "$p" 1>&2 || die "sgdisk typecode failed"
+		sgdisk --new=1:0:+200M "$p" 1>&2 || die "sgdisk uefi failed"
+		sgdisk --largest-new=2 "$p" 1>&2 || die "sgdisk largest failed"
+		sgdisk --typecode=1:ef00 "$p" 1>&2 || die "sgdisk typecode UEFI failed"
+		sgdisk --typecode=2:fd00 "$p" 1>&2 || die "sgdisk typecode MD failed"
 		sgdisk -p "$p" 1>&2 || die "sgdisk print failed"
 		partx "$p" 1>&2 || die "partx failed"
 	done
@@ -52,11 +54,11 @@ fi
 udevsettle
 
 # Try to assemble the mdadm array
-if [ $force_create = 0 ] && mdadm --assemble /dev/md0 /dev/nvme0n1p1 /dev/nvme1n1p1; then
+if [ $force_create = 0 ] && mdadm --assemble /dev/md0 /dev/nvme0n1p2 /dev/nvme1n1p2; then
 	info "Assembled mdadm array, continuing"
 else
 	warn "Could not assemble mdadm array, creating a new one"
-	mdadm --create /dev/md0 --level=0 --raid-devices=2 --run /dev/nvme{0,1}n1p1 || die "mdadm --create failed"
+	mdadm --create /dev/md0 --level=0 --raid-devices=2 --run /dev/nvme{0,1}n1p2 || die "mdadm --create failed"
 	force_create=1
 fi
 
@@ -81,8 +83,21 @@ else
 fi
 
 warn "Copying rootfs via rsync. This could take a while"
-rsync --stats -aHAX --delete --force --timeout=300 "$rsyncserver" "$NEWROOT" || die "rsync failed"
+rsync --stats -aHAX --delete --force --timeout=300 --exclude "swapfile" "$rsyncserver" "$NEWROOT" || die "rsync failed"
 warn "rsync done"
+
+warn "Swapfile setup"
+
+if ! [ -f "$NEWROOT/swapfile" ]; then
+	warn "Creating new swapfile"
+	dd if=/dev/zero of="$NEWROOT/swapfile" bs=1048576 count=2048 || die "creating swapfile failed"
+	mkswap "$NEWROOT/swapfile" || die "creating swap fs failed"
+fi
+
+warn "Activating swapfile"
+
+chmod 600 "$NEWROOT/swapfile" || die "chmod swapfile failed"
+swapon "$NEWROOT/swapfile" || die "swapon swapfile failed"
 
 warn "Updating hostname"
 hn="$(cat /proc/sys/kernel/hostname)"

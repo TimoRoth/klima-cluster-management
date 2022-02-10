@@ -35,6 +35,11 @@ warn "Cluster-Boot from $cluster_rsync_url"
 # Done, all good!
 rootok=1
 
+# If we don't have a server, we need dhcp
+if [ -z "$server" ]; then
+	DHCPORSERVER="1"
+fi
+
 if [ -z "$root" ]; then
 	root=block:/dev/root
 fi

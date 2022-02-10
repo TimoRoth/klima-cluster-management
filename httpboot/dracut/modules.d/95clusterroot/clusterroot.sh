@@ -106,7 +106,7 @@ mygw="$(ip -o route get to 8.8.8.8 | sed -n 's/.*via \([0-9.]\+\).*/\1/p')"
 mkdir -p "$NEWROOT/etc/systemd/network/" || die "mkdir networkd dir failed"
 echo -e "[Match]\nName=${myif}\n\n[Network]\nAddress=${myip}/24\nGateway=${mygw}" > "$NEWROOT/etc/systemd/network/50-node.network" || die "echo networkd failed"
 
-[ -e /dev/root ] || ln -s null /dev/root
+[ -e /dev/root ] || ln -s md2 /dev/root
 
 # inject new exit_if_exists
 echo 'settle_exit_if_exists="--exit-if-exists=/dev/root"; rm -f -- "$job"' > $hookdir/initqueue/cluster.sh

@@ -1,0 +1,9 @@
+[Match]
+Name=ib*
+
+[Network]
+DHCP=ipv4
+
+[DHCPv4]
+ClientIdentifier=mac
+UseHostname=true

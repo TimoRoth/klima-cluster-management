@@ -6,8 +6,6 @@
 
 type getarg >/dev/null 2>&1 || . /lib/dracut-lib.sh
 
-warn "IN PARSE CLUSTERROOT"
-
 # This script is sourced, so root should be set. But let's be paranoid
 [ -z "$root" ] && root=$(getarg root=)
 
@@ -22,7 +20,6 @@ fi
 if [ "${root%%:*}" = "cluster" ] ; then
 	if [ -n "$netroot" ] ; then
 		warn "root takes precedence over netroot. Ignoring netroot"
-
 	fi
 	netroot=$root
 	unset root

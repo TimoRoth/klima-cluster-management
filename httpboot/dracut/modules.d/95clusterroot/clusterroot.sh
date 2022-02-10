@@ -4,8 +4,6 @@ type getarg >/dev/null 2>&1 || . /lib/dracut-lib.sh
 
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
-warn "Cluster-Boot Test with Args: $*"
-
 # Huh? Empty $2?
 [ -z "$2" ] && exit 1
 

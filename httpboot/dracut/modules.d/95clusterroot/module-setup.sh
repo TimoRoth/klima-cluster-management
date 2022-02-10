@@ -6,9 +6,10 @@ check() {
 
 depends() {
 	echo bash
-	echo network-legacy
+	echo network
 	echo rootfs-block
 	echo dracut-systemd
+	return 0
 }
 
 install() {

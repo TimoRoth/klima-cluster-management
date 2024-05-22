@@ -9,6 +9,7 @@ depends() {
 	echo network
 	echo rootfs-block
 	echo dracut-systemd
+	return 0
 }
 
 install() {

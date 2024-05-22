@@ -35,8 +35,13 @@ warn "Cluster-Boot from $cluster_rsync_url"
 # Done, all good!
 rootok=1
 
-if [ -z "$root" ]; then
-	root=block:/dev/root
-	wait_for_dev -n /dev/root
+# If we don't have a server, we need dhcp
+if [ -z "$server" ]; then
+	DHCPORSERVER="1"
 fi
 
+if [ -z "$root" ]; then
+	root=block:/dev/root
+fi
+
+echo '[ -e /dev/root ]' > "$hookdir"/initqueue/finished/clusterroot.sh

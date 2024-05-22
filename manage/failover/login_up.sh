@@ -2,7 +2,7 @@
 set -xe
 
 # Stop drbd'ed services
-systemctl stop named dhcpd4 slurmdbd
+systemctl stop named kea-dhcp4-server kea-ctrl-agent slurmdbd
 systemctl stop mariadb
 
 # Bring down drbd
@@ -51,7 +51,7 @@ else
 fi
 
 # Bring up DRBD'ed services
-systemctl restart named dhcpd4
+systemctl restart named kea-ctrl-agent kea-dhcp4-server
 
 # Restart dependend services
 systemctl restart slurmdbd

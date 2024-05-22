@@ -44,4 +44,5 @@ if [ -z "$root" ]; then
 	root=block:/dev/root
 fi
 
+initqueue --settled --onetime /sbin/try-clusterroot "${systemdutildir}" "${netroot}" "${NEWROOT}"
 echo '[ -e /dev/root ]' > "$hookdir"/initqueue/finished/clusterroot.sh

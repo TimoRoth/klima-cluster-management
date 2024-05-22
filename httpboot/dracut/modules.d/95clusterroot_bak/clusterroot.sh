@@ -4,9 +4,6 @@ type getarg >/dev/null 2>&1 || . /lib/dracut-lib.sh
 
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
-# Huh? Empty $1?
-[ -z "$1" ] && exit 1
-
 # Huh? Empty $2?
 [ -z "$2" ] && exit 1
 
@@ -14,11 +11,11 @@ PATH=/usr/sbin:/usr/bin:/sbin:/bin
 [ -z "$3" ] && exit 1
 
 # root is in the form root=cluster:rsync://rsync_server/sysimage_root/
-netif="$1"
+#netif="$1"
 nroot="$2"
 NEWROOT="$3"
 
-# If it's not nbd we don't continue
+# If it's not cluster boot we don't continue
 [ "${nroot%%:*}" = "cluster" ] || return
 
 rsyncserver="${nroot#cluster:}"
@@ -107,9 +104,9 @@ mygw="$(ip -o route get to 8.8.8.8 | sed -n 's/.*via \([0-9.]\+\).*/\1/p')"
 mkdir -p "$NEWROOT/etc/systemd/network/" || die "mkdir networkd dir failed"
 echo -e "[Match]\nName=${myif}\n\n[Network]\nAddress=${myip}/24\nGateway=${mygw}" > "$NEWROOT/etc/systemd/network/50-node.network" || die "echo networkd failed"
 
-[ -e /dev/root ] || ln -s null /dev/root
+[ -e /dev/root ] || ln -s md2 /dev/root
 
 # inject new exit_if_exists
 echo 'settle_exit_if_exists="--exit-if-exists=/dev/root"; rm -f -- "$job"' > $hookdir/initqueue/cluster.sh
 # force udevsettle to break
-> $hookdir/initqueue/work
+: > $hookdir/initqueue/work

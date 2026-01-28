@@ -8,6 +8,9 @@ fi
 
 NAME="$1"
 
-ldapdelete -x -W -D "cn=admin,dc=cluster,dc=klima,dc=uni-bremen,dc=de" "cn=$NAME,ou=People,dc=cluster,dc=klima,dc=uni-bremen,dc=de" "cn=$NAME,ou=Group,dc=cluster,dc=klima,dc=uni-bremen,dc=de"
+sacctmgr -i delete User "$NAME" || true
+sacctmgr -i delete Account "$NAME" || true
+
+ldapdelete -Y EXTERNAL -H ldapi://%2Frun%2Fopenldap%2Fslapd.sock "cn=$NAME,ou=People,dc=cluster,dc=klima,dc=uni-bremen,dc=de" "cn=$NAME,ou=Group,dc=cluster,dc=klima,dc=uni-bremen,dc=de"
 
 echo DONE

@@ -7,3 +7,4 @@ DHCP=ipv4
 [DHCPv4]
 ClientIdentifier=mac
 UseHostname=true
+RequestOptions=12 17

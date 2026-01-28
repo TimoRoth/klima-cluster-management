@@ -15,8 +15,8 @@ mv downloads.sha256.tmp downloads.sha256
 xz -9 -e downloads.sha256
 sha256sum downloads.sha256.xz > downloads.sha256.xz.sha256
 
-module purge
-module load python/3
+#module purge
+#module load python/3
 
 ./gen_hdf_hashes.py downloads.sha256.xz downloads.sha256.hdf
 sha256sum downloads.sha256.hdf > downloads.sha256.hdf.sha256

@@ -15,7 +15,7 @@ if [ -z "$DN" ]; then
 	exit 1
 fi
 
-cat <<EOF | ldapmodify -x -W -D "cn=admin,dc=cluster,dc=klima,dc=uni-bremen,dc=de"
+cat <<EOF | ldapmodify -Y EXTERNAL -H ldapi://%2Frun%2Fopenldap%2Fslapd.sock
 dn: cn=$GROUPNAME,ou=Group,dc=cluster,dc=klima,dc=uni-bremen,dc=de
 changetype: modify
 add: member

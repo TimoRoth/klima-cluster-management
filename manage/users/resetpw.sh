@@ -10,7 +10,7 @@ NAME="$1"
 INITPW="$(tr -dc A-Za-z0-9 </dev/urandom | head -c14)"
 PWBASE64="$(echo -n "$INITPW" | base64 -w0)"
 
-cat <<EOF | ldapmodify -x -W -D "cn=admin,dc=cluster,dc=klima,dc=uni-bremen,dc=de"
+cat <<EOF | ldapmodify -Y EXTERNAL -H ldapi://%2Frun%2Fopenldap%2Fslapd.sock
 dn: cn=$NAME,ou=People,dc=cluster,dc=klima,dc=uni-bremen,dc=de
 changetype: modify
 replace: userPassword

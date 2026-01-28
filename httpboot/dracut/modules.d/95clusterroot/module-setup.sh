@@ -12,6 +12,7 @@ depends() {
 
 	if dracut_module_included systemd-networkd; then
 		echo systemd-hostnamed
+		echo dbus
 	fi
 
 	return 0
@@ -38,6 +39,7 @@ install() {
 	inst "$moddir/clusterroot.sh" "/sbin/clusterroot"
 	inst "$moddir/try-clusterroot.sh" "/sbin/try-clusterroot"
 	inst "$moddir/01-ib-dhcp.network" "/etc/systemd/network/01-ib-dhcp.network"
+	inst "$moddir/02-disable.network" "/etc/systemd/network/02-disable.network"
 
 	dracut_need_initqueue
 

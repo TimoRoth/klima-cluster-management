@@ -63,8 +63,8 @@ EOF
 
 cp -a /etc/skel "$NEWHOME"
 chown -R $NAME:$NAME "$NEWHOME"
-chmod 700 "$NEWHOME"
-su $NAME -c "ssh-keygen -t ed25519 -N '' -f ~/.ssh/id_ed25519 && cp ~/.ssh/id_ed25519.pub  ~/.ssh/authorized_keys"
+chmod 750 "$NEWHOME"
+sudo -i -u "$NAME" bash -c "ssh-keygen -t ed25519 -N '' -f ~/.ssh/id_ed25519 && cp ~/.ssh/id_ed25519.pub  ~/.ssh/authorized_keys"
 
 mkdir "/home/www/$NAME"
 chown -R $NAME:$NAME "/home/www/$NAME"
